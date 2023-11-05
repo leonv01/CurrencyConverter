@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import java.math.BigDecimal;
 import java.text.NumberFormat;
+import java.util.Arrays;
 import java.util.Currency;
 import java.util.Locale;
 
@@ -28,7 +29,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         String[] currencies = database.getCurrencies();
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.list_view_item, R.id.text_view,currencies);
+        //ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.list_view_item, R.id.text_view,currencies);
+
+        CurrencyListAdapter adapter  = new CurrencyListAdapter(Arrays.asList(currencies));
         spinnerIn = (Spinner) findViewById(R.id.spinnerValueIn);
         spinnerOut = (Spinner) findViewById(R.id.spinnerValueTo);
         spinnerOut.setAdapter(adapter);
