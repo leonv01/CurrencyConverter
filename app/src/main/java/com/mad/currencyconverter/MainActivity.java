@@ -17,7 +17,7 @@ import java.util.Currency;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
-    ExchangeRateDatabase database = new ExchangeRateDatabase();
+    ExchangeRateDatabase database;
     Spinner spinnerIn, spinnerOut;
     Button calculate;
     EditText valueIn;
@@ -28,10 +28,15 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        database = new ExchangeRateDatabase();
+
         String[] currencies = database.getCurrencies();
         //ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.list_view_item, R.id.text_view,currencies);
 
-        CurrencyListAdapter adapter  = new CurrencyListAdapter(Arrays.asList(currencies));
+        //CurrencyListAdapter adapter  = new CurrencyListAdapter(database);
+
+        CurrencyItemAdapter adapter = new CurrencyItemAdapter(database);
+
         spinnerIn = (Spinner) findViewById(R.id.spinnerValueIn);
         spinnerOut = (Spinner) findViewById(R.id.spinnerValueTo);
         spinnerOut.setAdapter(adapter);

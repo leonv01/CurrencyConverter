@@ -5,15 +5,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
 
-public class CurrencyListAdapter extends BaseAdapter {
+public class CurrencyItemAdapter extends BaseAdapter {
 
-    private final ExchangeRateDatabase database;
+    ExchangeRateDatabase database;
 
-    public CurrencyListAdapter(ExchangeRateDatabase database){
+    public CurrencyItemAdapter(ExchangeRateDatabase database){
         this.database = database;
     }
 
@@ -36,19 +37,20 @@ public class CurrencyListAdapter extends BaseAdapter {
     public View getView(int i, View view, ViewGroup viewGroup) {
 
         Context context = viewGroup.getContext();
+
         String currencyName = database.getCurrencies()[i];
 
         if(view == null){
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            view = inflater.inflate(R.layout.currency_list_view_item, null, false);
+            view = inflater.inflate(R.layout.currency_list_view_flag_item, null, false);
         }
+        ImageView flagBox = view.findViewById(R.id.list_image);
+        String imageIdString = String.format("flag_%s", currencyName.toLowerCase());
+        int imageID = context.getResources().getIdentifier(imageIdString, "drawable", context.getPackageName());
+        flagBox.setImageResource(imageID);
 
         TextView currencyText = (TextView) view.findViewById(R.id.list_text_name);
         currencyText.setText(currencyName);
-
-        TextView currency = (TextView) view.findViewById(R.id.list_text_currency);
-        double temp = database.getExchangeRate(currencyName);
-        currency.setText(Double.toString(temp));
 
         return view;
     }

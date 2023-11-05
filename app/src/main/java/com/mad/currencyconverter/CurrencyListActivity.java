@@ -19,7 +19,7 @@ public class CurrencyListActivity extends AppCompatActivity {
         this.database = new ExchangeRateDatabase();
 
         String[] temp = database.getCurrencies();
-        CurrencyListAdapter adapter = new CurrencyListAdapter(Arrays.asList(temp));
+        CurrencyListAdapter adapter = new CurrencyListAdapter(database);
 
         ListView listView = (ListView) findViewById(R.id.currency_list_view);
         listView.setAdapter(adapter);
