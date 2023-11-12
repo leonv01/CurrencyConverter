@@ -1,12 +1,22 @@
 package com.mad.currencyconverter;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.MenuItemCompat;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.ShareActionProvider;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -23,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
     EditText valueIn;
 
     TextView valueOutResult;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,6 +59,45 @@ public class MainActivity extends AppCompatActivity {
 
         calculate = (Button) findViewById(R.id.buttonConvert);
         calculate.setOnClickListener(ev -> convert());
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+        getMenuInflater().inflate(R.menu.my_menu, menu);
+
+        MenuItem shareItem = menu.findItem(R.id.action_share);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        // TODO Prof fragen wegen switch statement
+
+        /*
+        switch (item.getItemId()) {
+            case R.id.my_menu_entry:
+            Log.i("AppBarExample", "Yes, you clicked!");
+            return true;;
+            default:
+            return super.onOptionsItemSelected(item);
+         }
+         */
+
+        if (item.getItemId() == R.id.my_menu_entry) {
+            item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(@NonNull MenuItem item) {
+                    Intent currencyIntent = new Intent(MainActivity.this, CurrencyListActivity.class);
+                    startActivity(currencyIntent);
+                    return false;
+                }
+            });
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     public void convert(){
@@ -63,19 +113,13 @@ public class MainActivity extends AppCompatActivity {
         catch (NumberFormatException e){
             input = 0;
         }
-        double fromValue = database.getExchangeRate(inputItem);
-        double toValue = database.getExchangeRate(outputItem);
 
-        // convert from current currency into Euro
-        input /= fromValue;
-
-        // convert from Euro to target currency
-        input *= toValue;
+        double output = database.convert(input, inputItem, outputItem);
 
         // format result into currency with fitting signings
         NumberFormat format = NumberFormat.getCurrencyInstance();
         format.setCurrency(Currency.getInstance(outputItem));
-        String str = format.format(input);
+        String str = format.format(output);
         valueOutResult.setText(str);
     }
 }

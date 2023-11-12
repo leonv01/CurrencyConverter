@@ -7,6 +7,8 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import java.text.NumberFormat;
+import java.util.Currency;
 import java.util.List;
 
 public class CurrencyListAdapter extends BaseAdapter {
@@ -47,8 +49,11 @@ public class CurrencyListAdapter extends BaseAdapter {
         currencyText.setText(currencyName);
 
         TextView currency = (TextView) view.findViewById(R.id.list_text_currency);
-        double temp = database.getExchangeRate(currencyName);
-        currency.setText(Double.toString(temp));
+
+        NumberFormat format = NumberFormat.getCurrencyInstance();
+        format.setCurrency(Currency.getInstance(currencyName));
+        String str = format.format(database.getExchangeRate(currencyName));
+        currency.setText(str);
 
         return view;
     }
