@@ -2,6 +2,7 @@ package com.mad.currencyconverter;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.ShareActionProvider;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuItemCompat;
 
@@ -16,7 +17,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.ShareActionProvider;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
     EditText valueIn;
 
     TextView valueOutResult;
+    ShareActionProvider shareActionProvider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,11 +63,21 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu){
+    public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.my_menu, menu);
-
         MenuItem shareItem = menu.findItem(R.id.action_share);
+        shareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(shareItem);
+        setShareText(null);
         return true;
+    }
+
+    private void setShareText(String text){
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.setType("text/plain");
+        if(text != null){
+            shareIntent.putExtra(Intent.EXTRA_TEXT, text);
+        }
+        shareActionProvider.setShareIntent(shareIntent);
     }
 
     @Override
@@ -106,5 +117,6 @@ public class MainActivity extends AppCompatActivity {
         format.setCurrency(Currency.getInstance(outputItem));
         String str = format.format(output);
         valueOutResult.setText(str);
+        setShareText(str);
     }
 }

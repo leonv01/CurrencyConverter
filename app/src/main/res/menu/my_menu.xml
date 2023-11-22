@@ -7,8 +7,8 @@
         android:title="CurrencyList" />
 
     <item
-        android:id="@+id/action_share"
-        android:title="Share"
+        android:id="@+id/action_share" android:title="Share"
         app:showAsAction="ifRoom"
-        app:actionProviderClass="androidx.appcompat.widget.ShareActionProvider" />
+        app:actionProviderClass="androidx.appcompat.widget.ShareActionProvider"
+        />
 </menu>
