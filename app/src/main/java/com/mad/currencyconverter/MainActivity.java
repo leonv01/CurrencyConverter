@@ -42,9 +42,6 @@ public class MainActivity extends AppCompatActivity {
         database = new ExchangeRateDatabase();
 
         String[] currencies = database.getCurrencies();
-        //ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.list_view_item, R.id.text_view,currencies);
-
-        //CurrencyListAdapter adapter  = new CurrencyListAdapter(database);
 
         CurrencyItemAdapter adapter = new CurrencyItemAdapter(database);
 
@@ -74,18 +71,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        // TODO Prof fragen wegen switch statement
-
-        /*
-        switch (item.getItemId()) {
-            case R.id.my_menu_entry:
-            Log.i("AppBarExample", "Yes, you clicked!");
-            return true;;
-            default:
-            return super.onOptionsItemSelected(item);
-         }
-         */
-
         if (item.getItemId() == R.id.my_menu_entry) {
             item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                 @Override
