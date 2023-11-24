@@ -1,5 +1,9 @@
 package com.mad.currencyconverter;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -14,10 +18,28 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 public class CurrencyListActivity extends AppCompatActivity {
-
-    private static final int REQUEST_CODE = 123;
-
+    private CurrencyListAdapter adapter;
+    private Toolbar toolbar;
     ExchangeRateDatabase database;
+    ActivityResultLauncher<Intent> launcher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    assert result.getData() != null;
+                    String newValue = result.getData().getStringExtra("newExchangeRate");
+                    int position = result.getData().getIntExtra("listPosition", -1);
+
+                    if(position >= 0){
+                        String entry = (String) adapter.getItem(position);
+                        assert newValue != null;
+                        database.setExchangeRate(entry, Double.parseDouble(newValue));
+                    }
+                    adapter.notifyDataSetChanged();
+                }
+            }
+    );
+
     boolean editModeEnabled;
 
     @Override
@@ -28,7 +50,7 @@ public class CurrencyListActivity extends AppCompatActivity {
         this.database = new ExchangeRateDatabase();
 
         String[] temp = database.getCurrencies();
-        CurrencyListAdapter adapter = new CurrencyListAdapter(database);
+        adapter = new CurrencyListAdapter(database);
 
         ListView listView = (ListView) findViewById(R.id.currency_list_view);
         listView.setAdapter(adapter);
@@ -42,10 +64,10 @@ public class CurrencyListActivity extends AppCompatActivity {
                     Intent detailsIntent = new Intent(CurrencyListActivity.this, EditCurrencyActivity.class);
 
                     detailsIntent.putExtra("currency", currency);
-                    detailsIntent.putExtra("conversionRate", conversionRate);
-                    Log.d(conversionRate, conversionRate);
-                    database.setExchangeRate(currency, Double.parseDouble(conversionRate));
+                    detailsIntent.putExtra("exchangeRate", conversionRate);
+                    detailsIntent.putExtra("listPosition", position);
 
+                    launcher.launch(detailsIntent);
                     return;
                 }
 
@@ -55,7 +77,7 @@ public class CurrencyListActivity extends AppCompatActivity {
             }
         });
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.edit_mode_toolbar);
+        toolbar = (Toolbar) findViewById(R.id.edit_mode_toolbar);
         setSupportActionBar(toolbar);
 
         editModeEnabled = false;
@@ -71,10 +93,13 @@ public class CurrencyListActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.currency_list_edit_mode) {
             item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-
                 @Override
                 public boolean onMenuItemClick(@NonNull MenuItem item) {
                     editModeEnabled = !editModeEnabled;
+                    if(editModeEnabled)
+                        toolbar.setTitle("EditMode");
+                    else
+                        toolbar.setTitle("CurrencyConverter");
                     return false;
                 }
             });
