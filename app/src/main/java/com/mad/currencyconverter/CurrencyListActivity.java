@@ -20,6 +20,7 @@ import android.widget.ListView;
 public class CurrencyListActivity extends AppCompatActivity {
     private CurrencyListAdapter adapter;
     private Toolbar toolbar;
+    private ListView listView;
     ExchangeRateDatabase database;
     ActivityResultLauncher<Intent> launcher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -52,7 +53,7 @@ public class CurrencyListActivity extends AppCompatActivity {
         String[] temp = database.getCurrencies();
         adapter = new CurrencyListAdapter(database);
 
-        ListView listView = (ListView) findViewById(R.id.currency_list_view);
+        listView = (ListView) findViewById(R.id.currency_list_view);
         listView.setAdapter(adapter);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -100,11 +101,19 @@ public class CurrencyListActivity extends AppCompatActivity {
                         toolbar.setTitle("EditMode");
                     else
                         toolbar.setTitle("CurrencyConverter");
-                    return false;
+                    return true;
                 }
             });
-            return true;
-
+        }
+        if(item.getItemId() == R.id.list_refresh_entry){
+            item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(@NonNull MenuItem item) {
+                    RefreshRate.updateCurrencies(database);
+                    adapter.notifyDataSetChanged();
+                    return true;
+                }
+            });
         }
         return super.onOptionsItemSelected(item);
     }

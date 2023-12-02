@@ -1,6 +1,7 @@
 package com.mad.currencyconverter;
 
 import android.content.Context;
+import android.database.CursorWindowAllocationException;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,6 +9,8 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.text.NumberFormat;
+import java.util.Currency;
 import java.util.List;
 
 public class CurrencyItemAdapter extends BaseAdapter {
@@ -51,6 +54,13 @@ public class CurrencyItemAdapter extends BaseAdapter {
 
         TextView currencyText = (TextView) view.findViewById(R.id.list_text_name);
         currencyText.setText(currencyName);
+
+        TextView currencyRate = (TextView) view.findViewById(R.id.list_rate);
+
+        NumberFormat format = NumberFormat.getCurrencyInstance();
+        format.setCurrency(Currency.getInstance(currencyName));
+        String str = format.format(database.getExchangeRate(currencyName));
+        currencyRate.setText(str);
 
         return view;
     }

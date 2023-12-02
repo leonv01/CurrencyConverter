@@ -7,4 +7,10 @@
         app:showAsAction="never"
         android:title="Edit Mode"
        />
+
+    <item
+        android:id="@+id/list_refresh_entry"
+        app:showAsAction="never"
+        android:title="Refresh Rates"
+        />
 </menu>

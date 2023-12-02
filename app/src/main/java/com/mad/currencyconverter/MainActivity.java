@@ -8,6 +8,7 @@ import androidx.core.view.MenuItemCompat;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,11 +21,20 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.Currency;
 import java.util.Locale;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
     ExchangeRateDatabase database;
@@ -35,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
     TextView valueOutResult;
     ShareActionProvider shareActionProvider;
 
+    CurrencyItemAdapter adapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,9 +53,7 @@ public class MainActivity extends AppCompatActivity {
 
         database = new ExchangeRateDatabase();
 
-        String[] currencies = database.getCurrencies();
-
-        CurrencyItemAdapter adapter = new CurrencyItemAdapter(database);
+        adapter = new CurrencyItemAdapter(database);
 
         spinnerIn = (Spinner) findViewById(R.id.spinnerValueIn);
         spinnerOut = (Spinner) findViewById(R.id.spinnerValueTo);
@@ -60,6 +69,9 @@ public class MainActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().build();
+        StrictMode.setThreadPolicy(policy);
     }
 
     @Override
@@ -88,12 +100,20 @@ public class MainActivity extends AppCompatActivity {
                 public boolean onMenuItemClick(@NonNull MenuItem item) {
                     Intent currencyIntent = new Intent(MainActivity.this, CurrencyListActivity.class);
                     startActivity(currencyIntent);
-                    return false;
+                    return true;
                 }
             });
-            return true;
         }
-        return super.onOptionsItemSelected(item);
+        if(item.getItemId() == R.id.refresh_entry){
+            item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(@NonNull MenuItem item) {
+                    updateCurrencies();
+                    return true;
+                }
+            });
+        }
+        return false;
     }
 
     public void convert(){
@@ -118,5 +138,10 @@ public class MainActivity extends AppCompatActivity {
         String str = format.format(output);
         valueOutResult.setText(str);
         setShareText(str);
+    }
+
+    public void updateCurrencies(){
+        RefreshRate.updateCurrencies(database);
+        adapter.notifyDataSetChanged();
     }
 }
