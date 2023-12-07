@@ -6,7 +6,9 @@ import androidx.appcompat.widget.ShareActionProvider;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuItemCompat;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.util.Log;
@@ -30,6 +32,7 @@ import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.Currency;
+import java.util.List;
 import java.util.Locale;
 
 import okhttp3.OkHttpClient;
@@ -114,6 +117,39 @@ public class MainActivity extends AppCompatActivity {
             });
         }
         return false;
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        SharedPreferences prefs = getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+
+        String enteredValue = valueIn.getText().toString();
+
+        int sourceCurrency = spinnerIn.getSelectedItemPosition();
+        int targetCurrency = spinnerOut.getSelectedItemPosition();
+        editor.putInt("SourceCurrency", sourceCurrency);
+        editor.putInt("TargetCurrency", targetCurrency);
+        editor.putString("EnteredValue", enteredValue);
+
+        editor.apply();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        SharedPreferences prefs = getPreferences(Context.MODE_PRIVATE);
+
+        int sourceCurrency = prefs.getInt("SourceCurrency", 0);
+        int targetCurrency = prefs.getInt("TargetCurrency", 0);
+        String enteredValue = prefs.getString("EnteredValue", "");
+
+        spinnerIn.setSelection(sourceCurrency);
+        spinnerOut.setSelection(targetCurrency);
+        valueIn.setText(enteredValue);
     }
 
     public void convert(){
