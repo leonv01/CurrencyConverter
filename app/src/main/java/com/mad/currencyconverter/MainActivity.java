@@ -141,6 +141,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
+        updateCurrencies();
+
         SharedPreferences prefs = getPreferences(Context.MODE_PRIVATE);
 
         int sourceCurrency = prefs.getInt("SourceCurrency", 0);
