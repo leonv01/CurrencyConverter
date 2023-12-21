@@ -25,6 +25,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -52,6 +53,9 @@ public class MainActivity extends AppCompatActivity {
     ShareActionProvider shareActionProvider;
 
     CurrencyItemAdapter adapter;
+
+    RefreshRateNotifier refreshRateNotifier;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,6 +79,8 @@ public class MainActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        refreshRateNotifier = new RefreshRateNotifier(this);
     }
 
     @Override
@@ -181,6 +187,11 @@ public class MainActivity extends AppCompatActivity {
     public void updateCurrencies(){
         WorkRequest workRequest = new OneTimeWorkRequest.Builder(ExchangeRateUpdateWorker.class).build();
         WorkManager.getInstance(this).enqueue(workRequest);
+        this.runOnUiThread(() -> {
+            Toast toast = Toast.makeText(MainActivity.this, "Currencies updated", Toast.LENGTH_LONG);
+            toast.show();
+        });
         adapter.notifyDataSetChanged();
+        refreshRateNotifier.showOrUpdateNotification();
     }
 }

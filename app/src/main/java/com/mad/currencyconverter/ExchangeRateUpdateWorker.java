@@ -9,9 +9,11 @@ import androidx.work.WorkerParameters;
 
 public class ExchangeRateUpdateWorker extends Worker {
 
+
     ExchangeRateDatabase database;
     public ExchangeRateUpdateWorker(@NonNull Context context, @NonNull WorkerParameters workerParameters){
         super(context, workerParameters);
+
     }
 
     @NonNull
@@ -21,6 +23,7 @@ public class ExchangeRateUpdateWorker extends Worker {
         database = ExchangeRateDatabase.getInstance();
         RefreshRate.updateCurrencies(database);
         Log.d("Update done", "Update done");
+
         return Result.success();
     }
 }
