@@ -48,7 +48,7 @@ public class CurrencyListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_currency_list);
 
-        this.database = new ExchangeRateDatabase();
+        this.database = ExchangeRateDatabase.getInstance();
 
         String[] temp = database.getCurrencies();
         adapter = new CurrencyListAdapter(database);

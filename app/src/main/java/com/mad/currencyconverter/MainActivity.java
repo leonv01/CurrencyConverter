@@ -5,6 +5,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.ShareActionProvider;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuItemCompat;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
+import androidx.work.WorkRequest;
 
 import android.content.Context;
 import android.content.Intent;
@@ -54,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        database = new ExchangeRateDatabase();
+        database = ExchangeRateDatabase.getInstance();
 
         adapter = new CurrencyItemAdapter(database);
 
@@ -72,9 +75,6 @@ public class MainActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().build();
-        StrictMode.setThreadPolicy(policy);
     }
 
     @Override
@@ -179,7 +179,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void updateCurrencies(){
-        RefreshRate.updateCurrencies(database);
+        WorkRequest workRequest = new OneTimeWorkRequest.Builder(ExchangeRateUpdateWorker.class).build();
+        WorkManager.getInstance(this).enqueue(workRequest);
         adapter.notifyDataSetChanged();
     }
 }

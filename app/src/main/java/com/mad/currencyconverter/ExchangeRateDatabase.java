@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ExchangeRateDatabase {
+
+    private static ExchangeRateDatabase database;
+
     // Exchange rates to EURO - price for 1 Euro
      private final static ExchangeRate[] RATES = {
             new ExchangeRate("EUR", "Bruxelles", 1.0),
@@ -56,6 +59,15 @@ public class ExchangeRateDatabase {
 
     }
 
+    public static ExchangeRateDatabase getInstance(){
+        if(database == null)
+            database = new ExchangeRateDatabase();
+        return database;
+    }
+
+    private ExchangeRateDatabase(){
+    }
+
     /**
      * @return List of currency names
      */
@@ -77,7 +89,7 @@ public class ExchangeRateDatabase {
      * @param currency Currency name (three letters)
      * @param exchangeRate Exchange rate for one euro
      */
-    public void setExchangeRate(String currency, double exchangeRate) {
+    public synchronized void  setExchangeRate(String currency, double exchangeRate) {
         CURRENCIES_MAP.get(currency).setRateForOneEuro(exchangeRate);
     }
 
